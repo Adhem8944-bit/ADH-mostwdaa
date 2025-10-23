@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mizanati Pro - Universal Budget Management Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --premium: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --business: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --security: linear-gradient(135deg, #434343 0%, #000000 100%);
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--gradient);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* الهيدر المحسّن */
+        .main-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .brand {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .controls-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* نظام اللغات */
+        .language-switcher {
+            position: relative;
+        }
+
+        .language-btn {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .language-btn:hover {
+            background: rgba(52, 152, 219, 0.2);
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 10px 0;
+            min-width: 150px;
+            display: none;
+            z-index: 1001;
+        }
+
+        .language-dropdown.show {
+            display: block;
+        }
+
+        .language-option {
+            padding: 10px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .language-option:hover {
+            background: #f8f9fa;
+        }
+
+        .language-option.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        /* الأزرار */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            margin-top: 80px;
+            padding: 30px 0;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 25px;
+            min-height: calc(100vh - 140px);
+        }
+
+        /* الشريط الجانبي المحسّن */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .user-profile {
+            text-align: center;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .user-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--gradient);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .user-role {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-item {
+            margin-bottom: 8px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--primary);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .menu-link:hover,
+        .menu-link.active {
+            background: var(--secondary);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .menu-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* منطقة المحتوى */
+        .content-area {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .content-title {
+            font-size: 1.8em;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* البطاقات المحسّنة */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--secondary);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(52, 152, 219, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary);
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* التبويبات المحسّنة */
+        .tabs-navigation {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 6px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 1;
+            min-width: 140px;
+            font-weight: 500;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        /* الجداول المحسّنة */
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin: 20px 0;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--primary);
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* نماذج الإدخال المحسنة */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            outline: none;
+        }
+
+        /* نظام الأمان */
+        .security-badge {
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .security-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        /* نظام الإشعارات */
+        .notifications-panel {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .notification {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-right: 4px solid var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(100%);
+            opacity: 0;
+            animation: slideIn 0.5s forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* تصميم متجاوب محسّن */
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .controls-section {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs-navigation {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                min-width: 100%;
+            }
+        }
+
+        /* تأثيرات إضافية */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body>
+    <!-- الهيدر المحسّن -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">MP</div>
+                    <div class="brand">Mizanati Pro</div>
+                </div>
+                
+                <div class="controls-section">
+                    <!-- نظام اللغات -->
+                    <div class="language-switcher">
+                        <button class="language-btn" onclick="toggleLanguageDropdown()">
+                            <i class="fas fa-globe"></i>
+                            <span id="current-language">العربية</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="language-dropdown" id="languageDropdown">
+                            <div class="language-option active" data-lang="ar">
+                                <i class="fas fa-language"></i>
+                                العربية
+                            </div>
+                            <div class="language-option" data-lang="en">
+                                <i class="fas fa-language"></i>
+                                English
+                            </div>
+                            <div class="language-option" data-lang="es">
+                                <i class="fas fa-language"></i>
+                                Español
+                            </div>
+                            <div class="language-option" data-lang="fr">
+                                <i class="fas fa-language"></i>
+                                Français
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- أزرار التحكم -->
+                    <button class="btn btn-outline" onclick="showSecurityCenter()">
+                        <i class="fas fa-shield-alt"></i>
+                        <span data-translate="security">مركز الأمان</span>
+                    </button>
+                    <button class="btn btn-outline" onclick="showSupport()">
+                        <i class="fas fa-headset"></i>
+                        <span data-translate="support">الدعم</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="showAdminPanel()">
+                        <i class="fas fa-cog"></i>
+                        <span data-translate="admin">الإدارة</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content">
+        <div class="container">
+            <div class="dashboard">
+                <!-- الشريط الجانبي -->
+                <aside class="sidebar">
+                    <div class="user-profile">
+                        <div class="user-avatar">U</div>
+                        <div class="user-name" data-translate="user">المستخدم</div>
+                        <div class="user-role">
+                            <span class="security-badge">Premium</span>
+                        </div>
+                    </div>
+
+                    <ul class="sidebar-menu">
+                        <li class="menu-item">
+                            <a href="#" class="menu-link active" onclick="showTab('dashboard')">
+                                <div class="menu-icon">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                <span data-translate="dashboard">لوحة التحكم</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link" onclick="showTab('budget')">
+                                <div class="menu-icon">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <span data-translate="budget">إدارة الميزانية</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link" onclick="showTab('reports')">
+                                <div class="menu-icon">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <span data-translate="reports">التقارير</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link" onclick="showTab('analytics')">
+                                <div class="menu-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <span data-translate="analytics">التحليلات</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link" onclick="showTab('security')">
+                                <div class="menu-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <span data-translate="security">الأمان</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link" onclick="showTab('settings')">
+                                <div class="menu-icon">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <span data-translate="settings">الإعدادات</span>
+                            </a>
+                        </li>
+                    </ul>
+                </aside>
+
+                <!-- منطقة المحتوى الرئيسية -->
+                <section class="content-area">
+                    <!-- لوحة التحكم -->
+                    <div id="dashboard-tab" class="tab-content active">
+                        <div class="content-header">
+                            <h1 class="content-title">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span data-translate="dashboard">لوحة التحكم</span>
+                            </h1>
+                            <div class="content-actions">
+                                <button class="btn btn-primary" onclick="refreshData()">
+                                    <i class="fas fa-sync-alt"></i>
+                                    <span data-translate="refresh">تحديث</span>
+                                </button>
+                                <button class="btn btn-success" onclick="exportData()">
+                                    <i class="fas fa-download"></i>
+                                    <span data-translate="export">تصدير</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card hover-lift">
+                                <div class="stat-icon">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <div class="stat-value">$12,450</div>
+                                <div class="stat-label" data-translate="total_balance">إجمالي الرصيد</div>
+                            </div>
+                            <div class="stat-card hover-lift">
+                                <div class="stat-icon">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                                <div class="stat-value">$8,250</div>
+                                <div class="stat-label" data-translate="monthly_income">الدخل الشهري</div>
+                            </div>
+                            <div class="stat-card hover-lift">
+                                <div class="stat-icon">
+                                    <i class="fas fa-arrow-down"></i>
+                                </div>
+                                <div class="stat-value">$3,850</div>
+                                <div class="stat-label" data-translate="monthly_expenses">المصروفات الشهرية</div>
+                            </div>
+                            <div class="stat-card hover-lift">
+                                <div class="stat-icon">
+                                    <i class="fas fa-piggy-bank"></i>
+                                </div>
+                                <div class="stat-value">$4,400</div>
+                                <div class="stat-label" data-translate="monthly_savings">التوفير الشهري</div>
+                            </div>
+                        </div>
+
+                        <div class="tabs-navigation">
+                            <div class="tab-btn active" onclick="showSubTab('recent')">
+                                <span data-translate="recent_activity">النشاط الحديث</span>
+                            </div>
+                            <div class="tab-btn" onclick="showSubTab('charts')">
+                                <span data-translate="charts">الرسوم البيانية</span>
+                            </div>
+                            <div class="tab-btn" onclick="showSubTab('alerts')">
+                                <span data-translate="alerts">التنبيهات</span>
+                            </div>
+                        </div>
+
+                        <div id="recent-subtab" class="sub-tab active">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th data-translate="date">التاريخ</th>
+                                            <th data-translate="description">الوصف</th>
+                                            <th data-translate="amount">المبلغ</th>
+                                            <th data-translate="category">الفئة</th>
+                                            <th data-translate="status">الحالة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2024-01-15</td>
+                                            <td>تحويل راتب</td>
+                                            <td>$5,000</td>
+                                            <td data-translate="income">دخل</td>
+                                            <td><span class="security-badge" data-translate="completed">مكتمل</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2024-01-14</td>
+                                            <td>فاتورة إنترنت</td>
+                                            <td>$85</td>
+                                            <td data-translate="utilities">مرافق</td>
+                                            <td><span class="security-badge" data-translate="completed">مكتمل</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2024-01-12</td>
+                                            <td>تسوق أسبوعي</td>
+                                            <td>$320</td>
+                                            <td data-translate="shopping">تسوق</td>
+                                            <td><span class="security-badge" data-translate="completed">مكتمل</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- تبويب الأمان -->
+                    <div id="security-tab" class="tab-content">
+                        <div class="content-header">
+                            <h1 class="content-title">
+                                <i class="fas fa-shield-alt"></i>
+                                <span data-translate="security_center">مركز الأمان</span>
+                            </h1>
+                        </div>
+
+                        <div class="security-panel">
+                            <h3 data-translate="security_settings">إعدادات الأمان</h3>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" data-translate="two_factor">المصادقة الثنائية</label>
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <label class="switch">
+                                            <input type="checkbox" id="twoFactor" checked>
+                                            <span class="slider"></span>
+                                        </label>
+                                        <span data-translate="enabled">مفعل</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" data-translate="session_timeout">مهلة الجلسة</label>
+                                    <select class="form-control" id="sessionTimeout">
+                                        <option value="15">15 دقيقة</option>
+                                        <option value="30">30 دقيقة</option>
+                                        <option value="60">60 دقيقة</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" data-translate="activity_log">سجل النشاط</label>
+                                <div class="table-container">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th data-translate="timestamp">الوقت</th>
+                                                <th data-translate="activity">النشاط</th>
+                                                <th data-translate="location">الموقع</th>
+                                                <th data-translate="status">الحالة</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>2024-01-15 10:30</td>
+                                                <td data-translate="login_success">تسجيل دخول ناجح</td>
+                                                <td>Global Network</td>
+                                                <td><span class="security-badge" data-translate="success">ناجح</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>2024-01-14 15:20</td>
+                                                <td data-translate="password_change">تغيير كلمة المرور</td>
+                                                <td>Global Network</td>
+                                                <td><span class="security-badge" data-translate="success">ناجح</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-success" onclick="updateSecuritySettings()">
+                                <i class="fas fa-save"></i>
+                                <span data-translate="save_settings">حفظ الإعدادات</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- تبويب التقارير -->
+                    <div id="reports-tab" class="tab-content">
+                        <div class="content-header">
+                            <h1 class="content-title">
+                                <i class="fas fa-chart-bar"></i>
+                                <span data-translate="reports">التقارير</span>
+                            </h1>
+                        </div>
+
+                        <div class="tabs-navigation">
+                            <div class="tab-btn active" onclick="showReport('financial')">
+                                <span data-translate="financial_report">التقرير المالي</span>
+                            </div>
+                            <div class="tab-btn" onclick="showReport('comparative')">
+                                <span data-translate="comparative_analysis">المقارنات</span>
+                            </div>
+                            <div class="tab-btn" onclick="showReport('forecast')">
+                                <span data-translate="forecast">التوقعات</span>
+                            </div>
+                        </div>
+
+                        <div id="financial-report" class="report-content">
+                            <canvas id="financeChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- نظام الإشعارات -->
+    <div class="notifications-panel" id="notifications"></div>
+
+    <script>
+        // نظام الترجمة المتعدد اللغات
+        const translations = {
+            ar: {
+                dashboard: "لوحة التحكم",
+                budget: "إدارة الميزانية",
+                reports: "التقارير",
+                analytics: "التحليلات",
+                security: "الأمان",
+                settings: "الإعدادات",
+                security_center: "مركز الأمان",
+                support: "الدعم",
+                admin: "الإدارة",
+                refresh: "تحديث",
+                export: "تصدير",
+                total_balance: "إجمالي الرصيد",
+                monthly_income: "الدخل الشهري",
+                monthly_expenses: "المصروفات الشهرية",
+                monthly_savings: "التوفير الشهري",
+                recent_activity: "النشاط الحديث",
+                charts: "الرسوم البيانية",
+                alerts: "التنبيهات",
+                date: "التاريخ",
+                description: "الوصف",
+                amount: "المبلغ",
+                category: "الفئة",
+                status: "الحالة",
+                income: "دخل",
+                utilities: "مرافق",
+                shopping: "تسوق",
+                completed: "مكتمل",
+                security_settings: "إعدادات الأمان",
+                two_factor: "المصادقة الثنائية",
+                enabled: "مفعل",
+                session_timeout: "مهلة الجلسة",
+                activity_log: "سجل النشاط",
+                timestamp: "الوقت",
+                activity: "النشاط",
+                location: "الموقع",
+                login_success: "تسجيل دخول ناجح",
+                password_change: "تغيير كلمة المرور",
+                success: "ناجح",
+                save_settings: "حفظ الإعدادات",
+                financial_report: "التقرير المالي",
+                comparative_analysis: "المقارنات",
+                forecast: "التوقعات",
+                user: "المستخدم"
+            },
+            en: {
+                dashboard: "Dashboard",
+                budget: "Budget Management",
+                reports: "Reports",
+                analytics: "Analytics",
+                security: "Security",
+                settings: "Settings",
+                security_center: "Security Center",
+                support: "Support",
+                admin: "Admin",
+                refresh: "Refresh",
+                export: "Export",
+                total_balance: "Total Balance",
+                monthly_income: "Monthly Income",
+                monthly_expenses: "Monthly Expenses",
+                monthly_savings: "Monthly Savings",
+                recent_activity: "Recent Activity",
+                charts: "Charts",
+                alerts: "Alerts",
+                date: "Date",
+                description: "Description",
+                amount: "Amount",
+                category: "Category",
+                status: "Status",
+                income: "Income",
+                utilities: "Utilities",
+                shopping: "Shopping",
+                completed: "Completed",
+                security_settings: "Security Settings",
+                two_factor: "Two-Factor Authentication",
+                enabled: "Enabled",
+                session_timeout: "Session Timeout",
+                activity_log: "Activity Log",
+                timestamp: "Timestamp",
+                activity: "Activity",
+                location: "Location",
+                login_success: "Login Successful",
+                password_change: "Password Change",
+                success: "Success",
+                save_settings: "Save Settings",
+                financial_report: "Financial Report",
+                comparative_analysis: "Comparative Analysis",
+                forecast: "Forecast",
+                user: "User"
+            },
+            es: {
+                dashboard: "Panel de Control",
+                budget: "Gestión de Presupuesto",
+                reports: "Informes",
+                analytics: "Análisis",
+                security: "Seguridad",
+                settings: "Configuración",
+                security_center: "Centro de Seguridad",
+                support: "Soporte",
+                admin: "Administración",
+                refresh: "Actualizar",
+                export: "Exportar",
+                total_balance: "Saldo Total",
+                monthly_income: "Ingresos Mensuales",
+                monthly_expenses: "Gastos Mensuales",
+                monthly_savings: "Ahorros Mensuales",
+                recent_activity: "Actividad Reciente",
+                charts: "Gráficos",
+                alerts: "Alertas",
+                date: "Fecha",
+                description: "Descripción",
+                amount: "Cantidad",
+                category: "Categoría",
+                status: "Estado",
+                income: "Ingresos",
+                utilities: "Servicios",
+                shopping: "Compras",
+                completed: "Completado",
+                security_settings: "Configuración de Seguridad",
+                two_factor: "Autenticación de Dos Factores",
+                enabled: "Habilitado",
+                session_timeout: "Tiempo de Espera de Sesión",
+                activity_log: "Registro de Actividad",
+                timestamp: "Marca de Tiempo",
+                activity: "Actividad",
+                location: "Ubicación",
+                login_success: "Inicio de Sesión Exitoso",
+                password_change: "Cambio de Contraseña",
+                success: "Éxito",
+                save_settings: "Guardar Configuración",
+                financial_report: "Informe Financiero",
+                comparative_analysis: "Análisis Comparativo",
+                forecast: "Pronóstico",
+                user: "Usuario"
+            },
+            fr: {
+                dashboard: "Tableau de Bord",
+                budget: "Gestion du Budget",
+                reports: "Rapports",
+                analytics: "Analyses",
+                security: "Sécurité",
+                settings: "Paramètres",
+                security_center: "Centre de Sécurité",
+                support: "Support",
+                admin: "Administration",
+                refresh: "Actualiser",
+                export: "Exporter",
+                total_balance: "Solde Total",
+                monthly_income: "Revenu Mensuel",
+                monthly_expenses: "Dépenses Mensuelles",
+                monthly_savings: "Épargne Mensuelle",
+                recent_activity: "Activité Récente",
+                charts: "Graphiques",
+                alerts: "Alertes",
+                date: "Date",
+                description: "Description",
+                amount: "Montant",
+                category: "Catégorie",
+                status: "Statut",
+                income: "Revenu",
+                utilities: "Services",
+                shopping: "Shopping",
+                completed: "Terminé",
+                security_settings: "Paramètres de Sécurité",
+                two_factor: "Authentification à Deux Facteurs",
+                enabled: "Activé",
+                session_timeout: "Délai de Session",
+                activity_log: "Journal d'Activité",
+                timestamp: "Horodatage",
+                activity: "Activité",
+                location: "Emplacement",
+                login_success: "Connexion Réussie",
+                password_change: "Changement de Mot de Passe",
+                success: "Succès",
+                save_settings: "Enregistrer les Paramètres",
+                financial_report: "Rapport Financier",
+                comparative_analysis: "Analyse Comparative",
+                forecast: "Prévision",
+                user: "Utilisateur"
+            }
+        };
+
+        // حالة النظام
+        let currentLanguage = 'ar';
+        let currentUser = {
+            name: "User",
+            role: "Premium",
+            security: {
+                twoFactor: true,
+                sessionTimeout: 30
+            }
+        };
+
+        // تهيئة التطبيق
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            loadUserPreferences();
+            setupCharts();
+            showNotification('System initialized successfully', 'success');
+        });
+
+        function initializeApp() {
+            // تحميل اللغة المحفوظة
+            const savedLang = localStorage.getItem('mizanati_language');
+            if (savedLang) {
+                changeLanguage(savedLang);
+            }
+            
+            // إعداد مستمعي الأحداث
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            // مستمعي اختيار اللغة
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    changeLanguage(lang);
+                    document.getElementById('languageDropdown').classList.remove('show');
+                });
+            });
+
+            // إغلاق قائمة اللغات عند النقر خارجها
+            document.addEventListener('click', function(event) {
+                const dropdown = document.getElementById('languageDropdown');
+                const button = document.querySelector('.language-btn');
+                if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+
+        // نظام اللغات
+        function toggleLanguageDropdown() {
+            const dropdown = document.getElementById('languageDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            
+            // تحديث النصوص
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            // تحديث الزر الحالي
+            document.getElementById('current-language').textContent = 
+                lang === 'ar' ? 'العربية' : 
+                lang === 'en' ? 'English' : 
+                lang === 'es' ? 'Español' : 'Français';
+
+            // تحديث اتجاه الصفحة
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = lang;
+
+            // تحديث القائمة المنسدلة
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.getAttribute('data-lang') === lang) {
+                    option.classList.add('active');
+                }
+            });
+
+            // حفظ التفضيل
+            localStorage.setItem('mizanati_language', lang);
+            
+            showNotification('Language changed successfully', 'success');
+        }
+
+        // إدارة التبويبات
+        function showTab(tabName) {
+            // إخفاء جميع التبويبات
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // إزالة النشاط من القائمة الجانبية
+            document.querySelectorAll('.menu-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // إظهار التبويب المطلوب
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // تفعيل العنصر في القائمة الجانبية
+            event.target.classList.add('active');
+        }
+
+        function showSubTab(subTabName) {
+            // إخفاء جميع التبويبات الفرعية
+            document.querySelectorAll('.sub-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // إزالة النشاط من أزرار التبويب
+            document.querySelectorAll('.tab-btn').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // إظهار التبويب الفرعي المطلوب
+            document.getElementById(`${subTabName}-subtab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showReport(reportType) {
+            // إخفاء جميع التقارير
+            document.querySelectorAll('.report-content').forEach(report => {
+                report.style.display = 'none';
+            });
+            
+            // إزالة النشاط من أزرار التبويب
+            document.querySelectorAll('.tab-btn').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // إظهار التقرير المطلوب
+            document.getElementById(`${reportType}-report`).style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        // الرسوم البيانية
+        function setupCharts() {
+            const ctx = document.getElementById('financeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Income',
+                        data: [12000, 19000, 15000, 18000, 22000, 25000],
+                        backgroundColor: '#27ae60'
+                    }, {
+                        label: 'Expenses',
+                        data: [8000, 12000, 10000, 11000, 15000, 18000],
+                        backgroundColor: '#e74c3c'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // نظام الأمان
+        function updateSecuritySettings() {
+            const twoFactor = document.getElementById('twoFactor').checked;
+            const sessionTimeout = document.getElementById('sessionTimeout').value;
+            
+            currentUser.security.twoFactor = twoFactor;
+            currentUser.security.sessionTimeout = parseInt(sessionTimeout);
+            
+            // في التطبيق الحقيقي، هنا يتم إرسال البيانات للخادم
+            localStorage.setItem('mizanati_security', JSON.stringify(currentUser.security));
+            
+            showNotification('Security settings updated successfully', 'success');
+        }
+
+        function loadUserPreferences() {
+            const savedSecurity = localStorage.getItem('mizanati_security');
+            if (savedSecurity) {
+                currentUser.security = JSON.parse(savedSecurity);
+                document.getElementById('twoFactor').checked = currentUser.security.twoFactor;
+                document.getElementById('sessionTimeout').value = currentUser.security.sessionTimeout;
+            }
+        }
+
+        // الإشعارات
+        function showNotification(message, type = 'info') {
+            const notifications = document.getElementById('notifications');
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            
+            let icon = 'fas fa-info-circle';
+            if (type === 'success') icon = 'fas fa-check-circle';
+            if (type === 'error') icon = 'fas fa-times-circle';
+            
+            notification.innerHTML = `
+                <i class="${icon}" style="color: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db'}"></i>
+                <span>${message}</span>
+            `;
+            
+            notifications.appendChild(notification);
+            
+            // إزالة الإشعار بعد 5 ثوان
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.5s reverse forwards';
+                setTimeout(() => {
+                    notifications.removeChild(notification);
+                }, 500);
+            }, 5000);
+        }
+
+        // وظائف النظام
+        function showSecurityCenter() {
+            showTab('security');
+        }
+
+        function showSupport() {
+            showNotification('Support system will be opened', 'info');
+        }
+
+        function showAdminPanel() {
+            showNotification('Admin panel access required', 'info');
+        }
+
+        function refreshData() {
+            showNotification('Data refreshed successfully', 'success');
+        }
+
+        function exportData() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                user: currentUser.name,
+                financialData: {
+                    balance: 12450,
+                    income: 8250,
+                    expenses: 3850,
+                    savings: 4400
+                }
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `mizanati-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification('Data exported successfully', 'success');
+        }
+
+        // نظام النسخ الاحتياطي التلقائي
+        setInterval(() => {
+            const backupData = {
+                ...currentUser,
+                backupTime: new Date().toISOString()
+            };
+            localStorage.setItem('mizanati_backup', JSON.stringify(backupData));
+        }, 3600000); // كل ساعة
+    </script>
+</body>
+</html>
